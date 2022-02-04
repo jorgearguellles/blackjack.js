@@ -15,33 +15,36 @@
   </header>
 
   <div class="row mt-2">
-    <div class="col text-center">
-      <button class="btn btn-danger">new game</button>
-      <button class="btn btn-success">Call a card</button>
-      <button class="btn btn-primary">Stop my game</button>
+    <div id='div-buttons' class="col text-center">
+      <button id='btnNew' class="btn btn-danger">New game</button>
+      <button id='btnCall' class="btn btn-primary">Call card</button>
+      <button id='btnStop' class="btn btn-primary">Stop my game</button>
     </div>
   </div>
 
-  <div class="row container">
+
+  <div class="container">
     <div class="col">
       <h1>Player 1 - Score: <small>0</small></h1>
       <div id="playerOne">
-        <img class="cart" src="./assets/cartas/10C.png" />
-        <img class="cart" src="./assets/cartas/10C.png" />
+        <!-- <img class="cart" src="./assets/cartas/10C.png" /> -->
       </div>
     </div>
   </div>
 
-  <div class="row container">
+  <div class="container">
     <div class="col">
       <h1>Player 2 - Score: <small>0</small></h1>
       <div id="playerTwo">
-        <img class="cart" src="./assets/cartas/3C.png" />
-        <img class="cart" src="./assets/cartas/10C.png" />
+        <!-- <img class="cart" src="./assets/carts/3C.png" /> -->
       </div>
     </div>
   </div>
+
+
+
   
+  <script src="./assets/js/underscore-min.js"></script>
   <script src="./assets/js/index.js"></script>
 </body>
 </html>
