@@ -37,15 +37,14 @@ const createDeck = () => {
 
   return _.shuffle(deck);
 };
-deck = createDeck();
 
 // Function to take a card
-
 const callACart = ( ) => {
+ deck = createDeck();
+
   if (deck.length === 0) throw 'Deck empty';
   return deck.shift();
 };
-
 
 const cartValue = ( cart ) => {
   const value = cart.substring(0, cart.length - 1)
@@ -53,7 +52,6 @@ const cartValue = ( cart ) => {
 };
 
 // Player 2 logic
-
 const player2Turn = ( minScore) => {
   
   do {
@@ -75,11 +73,21 @@ const player2Turn = ( minScore) => {
 
   } while( (scorePlayer2 < minScore) && (minScore <= 21 ) );
 
+  setTimeout( ()=>{
+    if(scorePlayer2 === minScore){
+      alert(`Both player have the same Score ${minScore}`)
+    }else if (minScore > 21 ){
+      alert(`CPU win!`)
+    } else if( scorePlayer2 > 21){
+      alert(`Congratulations you win!`)
+    } else {
+      alert('CPU win!')
+    }
+  }, 500)
+
 }
 
-
 // Events
-
 btnCall.addEventListener('click', ()=>{
   const cart = callACart();
   scorePlayer1 = scorePlayer1 + cartValue(cart);
@@ -97,10 +105,32 @@ btnCall.addEventListener('click', ()=>{
   if( scorePlayer1 > 21){
     console.warn("Lose")
     btnCall.disabled = true;
+    btnStop.disabled = true;
     player2Turn(scorePlayer1);
 
   } else if( scorePlayer1 === 21) {
     console.warn("21, you win!")
     btnCall.disabled = true;
+    btnStop.disabled = true;
+
   }
 });
+
+btnStop.addEventListener('click', ()=>{
+  btnCall.disabled = true;
+  btnStop.disabled = true;
+  player2Turn(scorePlayer1)
+})
+
+btnNew.addEventListener('click', ()=>{
+  deck = [];
+  deck = createDeck();
+  scorePlayer1 = 0;
+  scorePlayer2 = 0;
+  scoreList[0].innerText = 0;
+  scoreList[1].innerText = 0;
+  containerCartsP1.innerHTML = '';
+  containerCartsP2.innerHTML = '';
+  btnCall.disabled = false;
+  btnStop.disabled = false;
+})
