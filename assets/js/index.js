@@ -1,40 +1,38 @@
 (()=>{
   'use strict'
   let deck = [];
-  const types = ['C','D','H','S'];
-  const capitals = ['A','J','Q','K'];
+  const types = ['C','D','H','S'],
+        capitals = ['A','J','Q','K'];
   let scorePlayer1 = 0;
   let scorePlayer2 = 0;
 
   //Refs HTML
-  const btnNew = document.querySelector('#btnNew');
-  const btnCall = document.querySelector('#btnCall');
-  const btnStop = document.querySelector('#btnStop');
-  const scoreList = document.querySelectorAll('small');
-  const containerCartsP1 = document.querySelector('#playerOne');
-  const containerCartsP2 = document.querySelector('#playerTwo');
+  const btnNew = document.querySelector('#btnNew'),
+        btnCall = document.querySelector('#btnCall'),
+        btnStop = document.querySelector('#btnStop');
+  const scoreList = document.querySelectorAll('small'),
+        containerCartsP1 = document.querySelector('#playerOne'),
+        containerCartsP2 = document.querySelector('#playerTwo');
 
   //Function to create Deck
   const createDeck = () => {
-    
+    deck=[];
     for( let i = 2; i <= 10; i++ ){
       for (let type of types){
         deck.push( i + type )
       }
     }
-
     for( let cap of capitals){
       for (let type of types){
         deck.push( cap + type)
       }
     }
-
     return _.shuffle(deck);
   };
 
   // Function to take a card
   const callACart = ( ) => {
-  deck = createDeck();
+    deck = createDeck();
 
     if (deck.length === 0) throw 'Deck empty';
     return deck.shift();
