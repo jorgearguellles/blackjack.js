@@ -1,3 +1,5 @@
+// IIFE = Module patron
+
 (()=>{
   'use strict'
   let deck = [];
