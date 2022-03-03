@@ -1,136 +1,148 @@
-/*
-2C => two clubs 
-2D => two Diamonds
-2H => two Hearts 
-2S => two Spades
-*/
+// IIFE = Module patron
 
-let deck = [];
-const types = ['C','D','H','S'];
-const capitals = ['A','J','Q','K'];
-let scorePlayer1 = 0;
-let scorePlayer2 = 0;
+(()=>{
+  'use strict'
 
-//Refs HTML
-const btnNew = document.querySelector('#btnNew');
-const btnCall = document.querySelector('#btnCall');
-const btnStop = document.querySelector('#btnStop');
-const scoreList = document.querySelectorAll('small');
-const containerCartsP1 = document.querySelector('#playerOne');
-const containerCartsP2 = document.querySelector('#playerTwo');
+  let deck = [],
+      playersPoints = []; // [player1, player2, playerN = CPU]
 
-
-
-const createDeck = () => {
+  const types = ['C','D','H','S'],
+        capitals = ['A','J','Q','K'];
   
-  for( let i = 2; i <= 10; i++ ){
-    for (let type of types){
-      deck.push( i + type )
-    }
-  }
+  //Refs HTML
+  const btnNew = document.querySelector('#btnNew'),
+        btnCall = document.querySelector('#btnCall'),
+        btnStop = document.querySelector('#btnStop');
 
-  for( let cap of capitals){
-    for (let type of types){
-      deck.push( cap + type)
-    }
-  }
+  const scoreList = document.querySelectorAll('small'),
+        divPlayersCarts = document.querySelectorAll('.divCarts');
 
-  return _.shuffle(deck);
-};
 
-// Function to take a card
-const callACart = ( ) => {
- deck = createDeck();
-
-  if (deck.length === 0) throw 'Deck empty';
-  return deck.shift();
-};
-
-const cartValue = ( cart ) => {
-  const value = cart.substring(0, cart.length - 1)
-  return (!isNaN(value)) ? value * 1 : (value === 'A') ? 11 : 10
-};
-
-// Player 2 logic
-const player2Turn = ( minScore) => {
-  
-  do {
-    const cart = callACart();
-    scorePlayer2 = scorePlayer2 + cartValue(cart);
-
-    // Show points
-    scoreList[1].innerText = scorePlayer2;
-
-    // Show carts in table troughs containerCartsP1
-    const imgCart = document.createElement('img');
-    imgCart.src = `./assets/carts/${cart}.png`; // dynamic src
-    imgCart.classList.add('cart') // cart style class applied
-    containerCartsP2.append(imgCart) // append the new cart into container carts Plater One
-
-    if(minScore > 21){
-      break
+  // Initialized Game
+  const initializedGame = ( numPlayers = 2 ) => {
+    deck = createDeck();
+    for( let i = 0; i < numPlayers; i++ ){
+      playersPoints.push(0);
     };
+  };
 
-  } while( (scorePlayer2 < minScore) && (minScore <= 21 ) );
-
-  setTimeout( ()=>{
-    if(scorePlayer2 === minScore){
-      alert(`Both player have the same Score ${minScore}`)
-    }else if (minScore > 21 ){
-      alert(`CPU win!`)
-    } else if( scorePlayer2 > 21){
-      alert(`Congratulations you win!`)
-    } else {
-      alert('CPU win!')
+  //Function to create Deck
+  const createDeck = () => {
+    deck=[];
+    for( let i = 2; i <= 10; i++ ){
+      for (let type of types){
+        deck.push( i + type )
+      }
     }
-  }, 500)
+    for( let cap of capitals){
+      for (let type of types){
+        deck.push( cap + type)
+      }
+    }
+    return _.shuffle(deck);
+  };
 
-}
+  // Function to call card
+  const callACart = ( ) => {
+    if (deck.length === 0) throw 'Deck empty';
+    return deck.pop();
+  };
 
-// Events
-btnCall.addEventListener('click', ()=>{
-  const cart = callACart();
-  scorePlayer1 = scorePlayer1 + cartValue(cart);
+  // Function to get card value
+  const cartValue = ( cart ) => {
+    const value = cart.substring(0, cart.length - 1)
+    return (!isNaN(value)) ? value * 1 : (value === 'A') ? 11 : 10
+  };
 
-  // Show points
-  scoreList[0].innerText = scorePlayer1;
+  // Player 2 logic (CPU)
+  // turn: 0 = Player1, 1=player2, ..., playerN = CPU
+  const accumulatePoints = ( cart, turn ) => {
+    playersPoints[turn] = playersPoints[turn] + cartValue( cart );
+    scoreList[turn].innerText = playersPoints[turn];
+    return playersPoints[turn];
+  };
 
-  // Show carts in table troughs containerCartsP1
-  const imgCart = document.createElement('img');
-  imgCart.src = `./assets/carts/${cart}.png`; // dynamic src
-  imgCart.classList.add('cart') // cart style class applied
-  containerCartsP1.append(imgCart) // append the new cart into container carts Plater One
+  const createCart = ( cart, turn ) => {
+    const imgCart = document.createElement('img');
+    imgCart.src = `./assets/carts/${cart}.png`; 
+    imgCart.classList.add('cart')
+    divPlayersCarts[turn].append(imgCart);
+  };
 
-  //Handle points to lose, win 
-  if( scorePlayer1 > 21){
-    console.warn("Lose")
-    btnCall.disabled = true;
-    btnStop.disabled = true;
-    player2Turn(scorePlayer1);
+  const cpuTurn = ( minScore ) => {
 
-  } else if( scorePlayer1 === 21) {
-    console.warn("21, you win!")
-    btnCall.disabled = true;
-    btnStop.disabled = true;
+    let scoreCPU = 0;
+
+    do {
+      const cart = callACart();
+      scoreCPU = accumulatePoints(cart, playersPoints.length - 1)
+      createCart( cart, playersPoints.length - 1 );
+      
+      if(minScore > 21){
+        break
+      };
+
+    } while( (scoreCPU < minScore) && (minScore <= 21 ) );
+
+    setTimeout( ()=>{
+      if(scoreCPU === minScore){
+        alert(`Both player have the same Score ${minScore}`)
+      }else if (minScore > 21 ){
+        alert(`CPU win!`)
+      } else if( scoreCPU > 21){
+        alert(`Congratulations you win!`)
+      } else {
+        alert('CPU win!')
+      }
+    }, 500)
 
   }
-});
 
-btnStop.addEventListener('click', ()=>{
-  btnCall.disabled = true;
-  btnStop.disabled = true;
-  player2Turn(scorePlayer1)
-})
+  // Events
+  btnCall.addEventListener('click', ()=>{
 
-btnNew.addEventListener('click', ()=>{
-  deck = [];
-  deck = createDeck();
-  scorePlayer1 = 0;
-  scorePlayer2 = 0;
-  scoreList[0].innerText = 0;
-  scoreList[1].innerText = 0;
-  containerCartsP1.innerHTML = '';
-  containerCartsP2.innerHTML = '';
-  btnCall.disabled = false;
-  btnStop.disabled = false;
-})
+    const cart = callACart();
+    const scorePlayer1 =  accumulatePoints( cart, 0);
+    createCart( cart, 0);
+  
+
+    //Handle points to lose, win 
+    if( scorePlayer1 > 21){
+      btnCall.disabled = true;
+      btnStop.disabled = true;
+      cpuTurn(scorePlayer1);
+
+    } else if( scorePlayer1 === 21) {
+      btnCall.disabled = true;
+      btnStop.disabled = true;
+
+    }
+  });
+
+  btnStop.addEventListener('click', ()=>{
+
+    btnCall.disabled = true;
+    btnStop.disabled = true;
+    cpuTurn(scorePlayer1)
+  })
+
+  btnNew.addEventListener('click', ()=>{
+
+    console.clear();
+    initializedGame();
+    // deck = [];
+    // deck = createDeck();
+    // scorePlayer1 = 0;
+    // scoreCPU = 0;
+
+    // scoreList[0].innerText = 0;
+    // scoreList[1].innerText = 0;
+
+    // containerCartsP1.innerHTML = '';
+    // containerCartsP2.innerHTML = '';
+
+    // btnCall.disabled = false;
+    // btnStop.disabled = false;
+  })
+
+})()
