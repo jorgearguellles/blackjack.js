@@ -20,10 +20,19 @@
 
   // Initialized Game
   const initializedGame = ( numPlayers = 2 ) => {
+
     deck = createDeck();
+    playersPoints = [];
+
     for( let i = 0; i < numPlayers; i++ ){
       playersPoints.push(0);
     };
+ 
+    scoreList.forEach( elem => elem.innerText = 0 );
+    divPlayersCarts.forEach( elem => elem.innerHTML = '' );
+
+    btnCall.disabled = false;
+    btnStop.disabled = false;
   };
 
   //Function to create Deck
@@ -69,20 +78,8 @@
     divPlayersCarts[turn].append(imgCart);
   };
 
-  const cpuTurn = ( minScore ) => {
-
-    let scoreCPU = 0;
-
-    do {
-      const cart = callACart();
-      scoreCPU = accumulatePoints(cart, playersPoints.length - 1)
-      createCart( cart, playersPoints.length - 1 );
-      
-      if(minScore > 21){
-        break
-      };
-
-    } while( (scoreCPU < minScore) && (minScore <= 21 ) );
+  const whoWin = () => {
+    const [minScore, scoreCPU] = playersPoints;
 
     setTimeout( ()=>{
       if(scoreCPU === minScore){
@@ -94,8 +91,21 @@
       } else {
         alert('CPU win!')
       }
-    }, 500)
+    }, 200)
 
+  }
+
+  const cpuTurn = ( minScore ) => {
+
+    let scoreCPU = 0;
+
+    do {
+      const cart = callACart();
+      scoreCPU = accumulatePoints(cart, playersPoints.length - 1)
+      createCart( cart, playersPoints.length - 1 );
+    } while( (scoreCPU < minScore) && (minScore <= 21 ) );
+
+    whoWin();
   }
 
   // Events
@@ -105,7 +115,6 @@
     const scorePlayer1 =  accumulatePoints( cart, 0);
     createCart( cart, 0);
   
-
     //Handle points to lose, win 
     if( scorePlayer1 > 21){
       btnCall.disabled = true;
@@ -115,34 +124,17 @@
     } else if( scorePlayer1 === 21) {
       btnCall.disabled = true;
       btnStop.disabled = true;
-
     }
   });
 
   btnStop.addEventListener('click', ()=>{
-
     btnCall.disabled = true;
     btnStop.disabled = true;
-    cpuTurn(scorePlayer1)
+    cpuTurn(playersPoints[0])
   })
 
   btnNew.addEventListener('click', ()=>{
-
-    console.clear();
     initializedGame();
-    // deck = [];
-    // deck = createDeck();
-    // scorePlayer1 = 0;
-    // scoreCPU = 0;
-
-    // scoreList[0].innerText = 0;
-    // scoreList[1].innerText = 0;
-
-    // containerCartsP1.innerHTML = '';
-    // containerCartsP2.innerHTML = '';
-
-    // btnCall.disabled = false;
-    // btnStop.disabled = false;
-  })
+  });
 
 })()
